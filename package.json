@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "next": "^13.4.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+    "repository": {
+    "type": "git",
+    "url": "git+https://github.com/henriquehsilva/todo-list.git"
+  },
+  "author": "Henrique H. da Silva <contato@henriquesilva.dev> (https://henriquesilva.dev/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/henriquehsilva/todo-list.git/issues"
+  },
+  "homepage": "https://github.com/henriquehsilva/todo-list.git#readme"
+}
