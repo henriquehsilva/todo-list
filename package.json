@@ -1,28 +1,40 @@
 {
-  "dependencies": {
-    "next": "^13.4.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/henriquehsilva/todo-list.git"
-  },
   "author": "Henrique H. da Silva <contato@henriquesilva.dev> (https://henriquesilva.dev/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/henriquehsilva/todo-list.git/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/henriquehsilva/todo-list.git"
+  },
   "homepage": "https://github.com/henriquehsilva/todo-list.git#readme",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint './**/*.{jsx,jsx,ts,tsx}'",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "devDependencies": {
     "@types/node": "20.3.0",
     "@types/react": "18.2.11",
-    "typescript": "5.1.3"
+    "typescript": "5.1.3",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "eslint": "^8.36.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.32.2",
+    "nodemon": "^2.0.21",
+    "prettier": "^2.8.7"
+  },
+  "dependencies": {
+    "next": "^13.4.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
