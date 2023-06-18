@@ -4,19 +4,21 @@ import Todo from "@server/models/todo";
 
 const DB_FILE_PATH = "src/server/db/todos.json";
 
-export const create = (date: string, content: string, done: boolean): Todo => {
-  const todo = {
+export const create = (content: string): Todo => {
+  const todo: Todo = {
     id: uuid(),
-    date: date,
+    date: new Date().toLocaleDateString(),
     content: content,
-    done: done,
+    done: false,
   };
+
+  const todos: Array<Todo> = [...listAll(), todo];
 
   fs.writeFileSync(
     DB_FILE_PATH,
     JSON.stringify(
       {
-        todos: Array<Todo>,
+        todos,
       },
       null,
       2
@@ -38,11 +40,13 @@ export const update = (id: string, partialTodo: Todo): Todo => {
     }
   });
 
+  // todos = [...listAll(), updatedTodo];
+
   fs.writeFileSync(
     DB_FILE_PATH,
     JSON.stringify(
       {
-        todos: Array<Todo>,
+        todos,
       },
       null,
       2
