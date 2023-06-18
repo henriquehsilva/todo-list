@@ -69,10 +69,26 @@ function HomePage() {
               </p>
             </div>
           </div>
+          <ul className="list-group" style={{ width: 400 }}>
+            <li className="list-group-item">
+              <a href="#">Link1</a>
+            </li>
+            <li className="list-group-item">
+              <a href="#">Link2</a>
+            </li>
+            <li className="list-group-item">
+              <a href="#">Link3</a>
+            </li>
+            <li className="list-group-item">
+              <a href="#">Link4</a>
+            </li>
+          </ul>
+
           <div className="typewriter">
             <h1>O que fazer hoje?</h1>
           </div>
           <form
+            style={{ marginLeft: -25 }}
             onSubmit={(event) => {
               event.preventDefault();
               todoController.create({
@@ -114,7 +130,8 @@ function HomePage() {
               }}
             />
           </form>
-
+          <br />
+          <h2 style={{ textAlign: "center" }}>Lista de tarefas</h2>
           <table border={1}>
             <thead>
               <tr>
