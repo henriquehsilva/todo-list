@@ -1,21 +1,52 @@
 import React from "react";
 import { GlobalStyles } from "@ui/theme/GlobalStyles";
 import { todoController } from "@ui/controller/todo";
+import { todo } from "node:test";
+import { set } from "zod";
 
 const bg = "./bg.jpeg";
 
+interface HomeTodo {
+  id?: string;
+  content?: string;
+  date?: string;
+  done?: boolean;
+}
+
 function HomePage() {
-  const [todos, setTodos] = React.useState([]);
+  const initialLoadComplete = React.useRef(false);
+  const [totalPages, setTotalPages] = React.useState(0);
+  const [page, setPage] = React.useState(1);
+  const [search, setSearch] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [todos, setTodos] = React.useState<HomeTodo[]>([]);
+  const [newTodoContent, setNewTodoContent] = React.useState("");
+  const homeTodos = todoController.filterTodosByContent<HomeTodo>(
+    todos,
+    search
+  );
+
+  const hasMorePages = totalPages > page;
+  const hasNoTodos = homeTodos.length === 0 && !isLoading;
 
   React.useEffect(() => {
-    todoController.get().then((todos) => {
-      setTodos(todos);
-    });
+    if (!initialLoadComplete.current) {
+      todoController
+        .get({ page })
+        .then(({ todos, pages }) => {
+          setTodos(todos);
+          setTotalPages(pages);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          initialLoadComplete.current = true;
+        });
+    }
   }, []);
 
   return (
     <main>
-      <GlobalStyles themeName="coolGrey" />
+      <GlobalStyles themeName="indigo" />
       <header
         style={{
           backgroundImage: `url('${bg}')`,
@@ -24,8 +55,31 @@ function HomePage() {
         <div className="typewriter">
           <h1>O que fazer hoje?</h1>
         </div>
-        <form>
-          <input type="text" placeholder="Correr, Estudar..." />
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            todoController.create({
+              content: newTodoContent,
+              onSuccess(todo: HomeTodo) {
+                setTodos((oldTodos) => {
+                  return [todo, ...oldTodos];
+                });
+                setNewTodoContent("");
+              },
+              onError() {
+                alert("Você precisa fornecer um conteúdo válido para o todo");
+              },
+            });
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Correr, Estudar..."
+            value={newTodoContent}
+            onChange={function newTodoHandler(event) {
+              setNewTodoContent(event.target.value);
+            }}
+          />
           <button type="submit" aria-label="Adicionar novo item">
             +
           </button>
@@ -34,7 +88,13 @@ function HomePage() {
 
       <section id="section-form">
         <form>
-          <input type="text" placeholder="Filtrar lista atual, ex: Dentista" />
+          <input
+            type="text"
+            placeholder="Filtrar lista atual, ex: Dentista"
+            onChange={function handleSearch(event) {
+              setSearch(event.target.value);
+            }}
+          />
         </form>
 
         <table border={1}>
@@ -48,53 +108,119 @@ function HomePage() {
               <th />
             </tr>
           </thead>
-
           <tbody>
-            {todos.map((todo) => {
+            {homeTodos.map((todo) => {
               return (
                 <tr key={todo.id}>
                   <td>
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      defaultChecked={todo.done}
+                      onChange={function handleToggle() {
+                        todoController.toggleDone({
+                          todoId: todo.id,
+                          updateTodoOnScreen() {
+                            setTodos((currentTodos) => {
+                              return currentTodos.map((currentTodo) => {
+                                if (currentTodo.id === todo.id) {
+                                  return {
+                                    ...currentTodo,
+                                    done: !currentTodo.done,
+                                  };
+                                }
+                                return currentTodo;
+                              });
+                            });
+                          },
+                        });
+                      }}
+                    />
                   </td>
                   <td>{todo.id.substring(0, 4)}</td>
                   <td>
-                    {todo.content} - {todo.date}
+                    {!todo.done && todo.content}
+                    {todo.done && <s>{todo.content}</s>}
                   </td>
                   <td align="right">
-                    <button data-type="delete">Apagar</button>
+                    <button
+                      data-type="delete"
+                      onClick={function handleClick() {
+                        todoController
+                          .deleteById(todo.id)
+                          .then(() => {
+                            setTodos((currentTodos) => {
+                              return currentTodos.filter((currentTodo) => {
+                                if (currentTodo.id === todo.id) {
+                                  return false;
+                                }
+                                return true;
+                              });
+                            });
+                          })
+                          .catch(() => {
+                            alert("Não foi possível apagar o todo");
+                          });
+                      }}
+                    >
+                      Apagar
+                    </button>
                   </td>
                 </tr>
               );
             })}
 
-            {/* <tr>
-              <td colSpan={4} align="center" style={{ textAlign: "center" }}>
-                Carregando...
-              </td>
-            </tr>
+            {isLoading && (
+              <tr>
+                <td colSpan={4} align="center" style={{ textAlign: "center" }}>
+                  Carregando...
+                </td>
+              </tr>
+            )}
 
-            <tr>
-              <td colSpan={4} align="center">
-                Nenhum item encontrado
-              </td>
-            </tr>
+            {hasNoTodos && (
+              <tr>
+                <td colSpan={4} align="center">
+                  Nenhum item encontrado
+                </td>
+              </tr>
+            )}
 
-            <tr>
-              <td colSpan={4} align="center" style={{ textAlign: "center" }}>
-                <button data-type="load-more">
-                  Carregar mais{" "}
-                  <span
-                    style={{
-                      display: "inline-block",
-                      marginLeft: "4px",
-                      fontSize: "1.2em",
+            {hasMorePages && (
+              <tr>
+                <td colSpan={4} align="center" style={{ textAlign: "center" }}>
+                  <button
+                    data-type="load-more"
+                    onClick={() => {
+                      setIsLoading(true);
+                      const nextPage = page + 1;
+                      setPage(nextPage);
+                      todoController
+                        .get({ page: nextPage })
+                        .then(({ todos, pages }) => {
+                          setTodos((oldTodos) => {
+                            return [...oldTodos, ...todos];
+                          });
+                          setTotalPages(pages);
+                        })
+                        .finally(() => {
+                          setIsLoading(false);
+                        });
                     }}
                   >
-                    ↓
-                  </span>
-                </button>
-              </td>
-            </tr> */}
+                    Página {page} Carregar mais{" "}
+                    <span
+                      style={{
+                        display: "inline-block",
+                        marginLeft: "4px",
+                        fontSize: "1.2em",
+                      }}
+                    >
+                      ↓
+                    </span>
+                  </button>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </section>
