@@ -10,5 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: "Debug"
+        run: "ls -la"
+      - name: "Install dependencies"
+        run: "npm install"
       - name: "Lint"
-        run: "echo 'Linting...'"
+        run: "npm run lint"
