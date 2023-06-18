@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: "Lint"
-        run: "echo 'Linting...'"
+        run: "echo 'Linting rodando...'"
