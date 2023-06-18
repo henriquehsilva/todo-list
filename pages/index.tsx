@@ -1,8 +1,6 @@
 import React from "react";
 import { GlobalStyles } from "@ui/theme/GlobalStyles";
 import { todoController } from "@ui/controller/todo";
-import { todo } from "node:test";
-import { set } from "zod";
 
 const bg = "./bg.jpeg";
 
@@ -73,6 +71,7 @@ function HomePage() {
           }}
         >
           <input
+            name="add-todo"
             type="text"
             placeholder="Correr, Estudar..."
             value={newTodoContent}
