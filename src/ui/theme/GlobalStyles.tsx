@@ -267,17 +267,6 @@ export function GlobalStyles({ themeName }: { themeName?: ThemeName }) {
           position: relative;
           font-size: 18px;
         }
-        section form::before {
-          content: "🔎";
-          width: var(--iconSize);
-          height: var(--iconSize);
-          position: absolute;
-          top: -4px;
-          left: 16px;
-          bottom: 0;
-          margin: auto;
-          font-size: inherit;
-        }
         section form input {
           display: flex;
           font-size: inherit;
